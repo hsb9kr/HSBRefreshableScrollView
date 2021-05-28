@@ -15,8 +15,12 @@ public struct RefreshableScrollView<Content : View>: View {
 	}
 
 	@State private var refresh: RefreshableScrollView.Refresh = .init()
-	@Binding public var isRefresh: Bool
-	public var content: () -> Content
+	@Binding var isRefresh: Bool
+	var content: () -> Content
+	
+	public init(isRefresh: Binding<Bool>, content: @escaping () -> Content) {
+		_isRefresh = isRefresh
+	}
 	
 	public var body: some View {
 		ScrollView {
