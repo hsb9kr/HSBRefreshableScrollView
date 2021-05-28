@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-open struct RefreshableScrollView<Content : View>: View {
+public struct RefreshableScrollView<Content : View>: View {
 	
 	struct Refresh {
 		var startOffset: CGFloat = 0
@@ -15,10 +15,10 @@ open struct RefreshableScrollView<Content : View>: View {
 	}
 
 	@State private var refresh: RefreshableScrollView.Refresh = .init()
-	@Binding var isRefresh: Bool
-	var content: () -> Content
+	@Binding public var isRefresh: Bool
+	public var content: () -> Content
 	
-    var body: some View {
+	public var body: some View {
 		ScrollView {
 			GeometryReader { geometry -> AnyView in
 				DispatchQueue.main.async {
