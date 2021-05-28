@@ -20,6 +20,7 @@ public struct RefreshableScrollView<Content : View>: View {
 	
 	public init(isRefresh: Binding<Bool>, content: @escaping () -> Content) {
 		_isRefresh = isRefresh
+		self.content = content
 	}
 	
 	public var body: some View {
