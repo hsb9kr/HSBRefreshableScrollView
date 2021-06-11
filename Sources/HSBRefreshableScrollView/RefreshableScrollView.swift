@@ -13,8 +13,10 @@ public struct RefreshableScrollView<Content : View>: View {
 		var startOffset: CGFloat = 0
 		var offset: CGFloat = 0
 	}
-
-	@State private var refresh: RefreshableScrollView.Refresh = .init()
+    
+    fileprivate let refreshHeight: CGFloat = 120
+    @State fileprivate var prepareRefresh: Bool = false
+	@State fileprivate var refresh: RefreshableScrollView.Refresh = .init()
 	@Binding var isRefresh: Bool
 	var content: () -> Content
 	
@@ -31,19 +33,24 @@ public struct RefreshableScrollView<Content : View>: View {
 						refresh.startOffset = geometry.frame(in: .global).minY
 					}
 					refresh.offset = geometry.frame(in: .global).minY
-					if refresh.offset - refresh.startOffset > 100 && !isRefresh {
+					if refresh.offset - refresh.startOffset > refreshHeight && !prepareRefresh {
 						let generator = UINotificationFeedbackGenerator()
 						generator.notificationOccurred(.success)
-						withAnimation { isRefresh = true }
+						withAnimation { prepareRefresh = true }
 					}
+                    
+                    if prepareRefresh && !isRefresh && refresh.offset - refresh.startOffset < refreshHeight {
+                        prepareRefresh = false
+                        isRefresh = true
+                    }
 				}
 				return AnyView(Color.white.frame(width: 0, height: 0))
 			}
 			.frame(width: 0, height: 0)
 			ZStack(alignment: .top) {
-				if isRefresh { ProgressView() }
+				if prepareRefresh || isRefresh { ProgressView() }
 				content()
-				.offset(y: isRefresh ? 30 : -8)
+				.offset(y: isRefresh || prepareRefresh ? 30 : -8)
 			}
 		}
     }
