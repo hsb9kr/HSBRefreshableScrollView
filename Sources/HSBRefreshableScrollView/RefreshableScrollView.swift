@@ -14,13 +14,14 @@ public struct RefreshableScrollView<Content : View>: View {
 		var offset: CGFloat = 0
 	}
     
-    fileprivate let refreshHeight: CGFloat = 120
+    fileprivate let refreshHeight: CGFloat
     @State fileprivate var prepareRefresh: Bool = false
 	@State fileprivate var refresh: RefreshableScrollView.Refresh = .init()
 	@Binding var isRefresh: Bool
 	var content: () -> Content
 	
-	public init(isRefresh: Binding<Bool>, content: @escaping () -> Content) {
+    public init(refreshHeight: CGFloat = 120, isRefresh: Binding<Bool>, content: @escaping () -> Content) {
+        self.refreshHeight = refreshHeight
 		_isRefresh = isRefresh
 		self.content = content
 	}
