@@ -53,6 +53,10 @@ public struct RefreshableScrollView<Content : View>: View {
 				content()
 				.offset(y: isRefresh || prepareRefresh ? 30 : -8)
 			}
+            .onChange(of: isRefresh) { value in
+                guard !isRefresh else { return }
+                prepareRefresh = false
+            }
 		}
     }
 }
