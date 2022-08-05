@@ -21,11 +21,17 @@ public struct RefreshableScrollView<Content : View>: View {
 	var content: () -> Content
 	var progress: (() -> AnyView)?
 	
-	public init(refreshHeight: CGFloat = 120, isRefresh: Binding<Bool>, progress: (() -> AnyView)? = nil, content: @escaping () -> Content) {
+	public init(refreshHeight: CGFloat = 120, isRefresh: Binding<Bool>, content: @escaping () -> Content) {
         self.refreshHeight = refreshHeight
 		_isRefresh = isRefresh
 		self.content = content
-		self.progress = progress
+	}
+	
+	public init<Progress: View>(refreshHeight: CGFloat = 120, isRefresh: Binding<Bool>, progress: @escaping () -> Progress, content: @escaping () -> Content) {
+		self.refreshHeight = refreshHeight
+		_isRefresh = isRefresh
+		self.content = content
+		self.progress = { AnyView(progress()) }
 	}
 	
 	public var body: some View {
