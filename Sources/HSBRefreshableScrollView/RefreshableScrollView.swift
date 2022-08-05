@@ -19,11 +19,13 @@ public struct RefreshableScrollView<Content : View>: View {
 	@State fileprivate var refresh: RefreshableScrollView.Refresh = .init()
 	@Binding var isRefresh: Bool
 	var content: () -> Content
+	var progress: (() -> AnyView)?
 	
-    public init(refreshHeight: CGFloat = 120, isRefresh: Binding<Bool>, content: @escaping () -> Content) {
+	public init(refreshHeight: CGFloat = 120, isRefresh: Binding<Bool>, progress: (() -> AnyView)? = nil, content: @escaping () -> Content) {
         self.refreshHeight = refreshHeight
 		_isRefresh = isRefresh
 		self.content = content
+		self.progress = progress
 	}
 	
 	public var body: some View {
@@ -49,7 +51,13 @@ public struct RefreshableScrollView<Content : View>: View {
 			}
 			.frame(width: 0, height: 0)
 			ZStack(alignment: .top) {
-				if prepareRefresh || isRefresh { ProgressView() }
+				if prepareRefresh || isRefresh {
+					if let progress = progress {
+						progress()
+					} else {
+						ProgressView()
+					}
+				}
 				content()
 				.offset(y: isRefresh || prepareRefresh ? 30 : -8)
 			}

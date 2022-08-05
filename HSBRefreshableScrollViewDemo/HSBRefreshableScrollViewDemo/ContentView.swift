@@ -11,7 +11,7 @@ struct ContentView: View {
     @State var isRefresh: Bool = false
     var body: some View {
         NavigationView {
-            RefreshableScrollView(isRefresh: $isRefresh) {
+			RefreshableScrollView(isRefresh: $isRefresh) {
                 LazyVStack {
                     ForEach(0..<100) { index in
                         Text("\(index)")
