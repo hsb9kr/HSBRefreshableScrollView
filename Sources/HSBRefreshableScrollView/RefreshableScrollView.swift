@@ -17,6 +17,7 @@ public struct RefreshableScrollView<Content : View>: View {
     fileprivate let refreshHeight: CGFloat
     @State fileprivate var prepareRefresh: Bool = false
 	@State fileprivate var refresh: RefreshableScrollView.Refresh = .init()
+	@State fileprivate var progressHeight: CGFloat = 0
 	@Binding var isRefresh: Bool
 	var content: () -> Content
 	var progress: (() -> AnyView)?
@@ -58,19 +59,37 @@ public struct RefreshableScrollView<Content : View>: View {
 			.frame(width: 0, height: 0)
 			ZStack(alignment: .top) {
 				if prepareRefresh || isRefresh {
-					if let progress = progress {
-						progress()
-					} else {
-						ProgressView()
+					Group {
+						if let progress = progress {
+							progress()
+						} else {
+							ProgressView()
+						}
 					}
+					.background(
+						GeometryReader { proxy in
+							Color.clear.preference(key: ViewHeightPreferenceKey.self, value: proxy.size.height)
+						}
+					)
 				}
 				content()
-				.offset(y: isRefresh || prepareRefresh ? 30 : -8)
+					.offset(y: isRefresh || prepareRefresh ? progressHeight : -8)
 			}
             .onChange(of: isRefresh) { value in
                 guard !isRefresh else { return }
                 prepareRefresh = false
             }
+			.onPreferenceChange(ViewHeightPreferenceKey.self) { height in
+				self.progressHeight = height
+			}
 		}
     }
+}
+
+struct ViewHeightPreferenceKey: PreferenceKey {
+	
+	static var defaultValue: CGFloat { 0 }
+	static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+		value += nextValue()
+	}
 }
