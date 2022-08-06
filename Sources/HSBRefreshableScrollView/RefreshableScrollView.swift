@@ -57,39 +57,20 @@ public struct RefreshableScrollView<Content : View>: View {
 				return AnyView(Color.white.frame(width: 0, height: 0))
 			}
 			.frame(width: 0, height: 0)
-			ZStack(alignment: .top) {
+			VStack(spacing: 0) {
 				if prepareRefresh || isRefresh {
-					Group {
-						if let progress = progress {
-							progress()
-						} else {
-							ProgressView()
-						}
+					if let progress = progress {
+						progress()
+					} else {
+						ProgressView().padding()
 					}
-					.background(
-						GeometryReader { proxy in
-							Color.clear.preference(key: ViewHeightPreferenceKey.self, value: proxy.size.height)
-						}
-					)
 				}
 				content()
-					.offset(y: isRefresh || prepareRefresh ? progressHeight : -8)
 			}
             .onChange(of: isRefresh) { value in
                 guard !isRefresh else { return }
                 prepareRefresh = false
             }
-			.onPreferenceChange(ViewHeightPreferenceKey.self) { height in
-				self.progressHeight = height
-			}
 		}
     }
-}
-
-struct ViewHeightPreferenceKey: PreferenceKey {
-	
-	static var defaultValue: CGFloat { 0 }
-	static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-		value += nextValue()
-	}
 }
